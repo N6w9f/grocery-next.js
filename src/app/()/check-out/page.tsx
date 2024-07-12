@@ -1,12 +1,17 @@
 "use client";
 import CurrentCategory from "@/components/products/CurrentCategory";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, {
+    ChangeEvent,
+    KeyboardEvent,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 
 import { useAppSelector } from "@/hooks/providers/ReduxProvider.hook";
 
 import { TextField } from "@mui/material";
 import { useRouter } from "next/navigation";
-import useFormatter from "@/hooks/useNumberFormatter";
 
 import centsChange from "@/utilities/cents";
 import CheckOut from "@/components/CheckOut";
@@ -20,7 +25,11 @@ if (!publicKey) {
 
 const stripePromise = loadStripe(publicKey);
 
-const page = () => {
+const Page = () => {
+    const numberFormat = Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+    });
     const tax = 9;
     const delivery = 15;
     const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -55,20 +64,26 @@ const page = () => {
     }, [subTotal, totalWithTax, delivery]);
 
     const inputsOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputs((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
-    };
-    const phoneOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const isValid = numbers.some(
-            (num) => num === +e.currentTarget.value.slice(-1)
-        );
-        isValid &&
+        if (e?.target?.value || e?.target?.value === "") {
             setInputs((prev) => ({
                 ...prev,
-                phone: e.currentTarget.value,
+                [e?.target?.name]: e.target.value,
             }));
+        }
+    };
+    const phoneOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e?.target?.value || e?.target?.value === "") {
+            const isValid = numbers.some(
+                (num) =>
+                    num === +e?.target?.value.slice(-1) ||
+                    e?.target.value === ""
+            );
+            isValid &&
+                setInputs((prev) => ({
+                    ...prev,
+                    phone: e?.target?.value.trim(),
+                }));
+        }
     };
 
     useEffect(() => {
@@ -135,26 +150,24 @@ const page = () => {
                     <div className="p-6 flex flex-col gap-3">
                         <h3 className="flex justify-between items-center gap-3 font-bold text-xl">
                             Subtotal:
-                            <span>{useFormatter(subTotal, "currency")}</span>
+                            <span>{numberFormat.format(subTotal)}</span>
                         </h3>
 
                         <hr />
 
                         <h3 className="flex justify-between items-center gap-3 font-medium text-xl">
                             Delivery:
-                            <span>{useFormatter(delivery, "currency")}</span>
+                            <span>{numberFormat.format(delivery)}</span>
                         </h3>
                         <h3 className="flex justify-between items-center gap-3 font-medium text-xl">
                             Tax ({tax}%):
-                            <span>
-                                {useFormatter(totalWithTax, "currency")}
-                            </span>
+                            <span>{numberFormat.format(totalWithTax)}</span>
                         </h3>
 
                         <hr />
                         <h3 className="flex justify-between items-center gap-3 font-bold text-xl">
                             Total:
-                            <span>{useFormatter(total, "currency")}</span>
+                            <span>{numberFormat.format(total)}</span>
                         </h3>
 
                         <Elements
@@ -178,4 +191,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;

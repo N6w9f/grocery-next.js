@@ -26,16 +26,16 @@ const registerSchema = zod.object({
     PasswordConfirmation: zod.string().min(8, "Password is required"),
     check: zod.boolean(),
 });
-const page = () => {
-    const router = useRouter();
+const Page = () => {
+    const Router = useRouter();
     const SearchParams = useSearchParams();
     const user = SearchParams.get("user") || "false";
     const redirect = SearchParams.get("redirect")
         ? SearchParams.get("redirect")
         : "";
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [form, setForm] = useState({
+    const [IsLoading, setIsLoading] = useState(false);
+    const [Form, setForm] = useState({
         FirstName: "",
         LastName: "",
         Email: "",
@@ -55,14 +55,14 @@ const page = () => {
         e.preventDefault();
         if (user === "true") {
             // validation
-            const isValid = loginSchema.safeParse(form);
+            const isValid = loginSchema.safeParse(Form);
             if (!isValid.success) return null;
 
             //   send a log in request
             setIsLoading(true);
             const res = await login({
-                identifier: form.Email,
-                password: form.Password,
+                identifier: Form.Email,
+                password: Form.Password,
             });
 
             //   throw an error
@@ -77,10 +77,10 @@ const page = () => {
             sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
             redirect === "false" || redirect === ""
-                ? router.push("/", {
+                ? Router.push("/", {
                       scroll: false,
                   })
-                : router.push("/" + redirect, {
+                : Router.push("/" + redirect, {
                       scroll: false,
                   });
 
@@ -92,19 +92,19 @@ const page = () => {
             });
         } else {
             // validation
-            const isValid = registerSchema.safeParse(form);
+            const isValid = registerSchema.safeParse(Form);
             if (!isValid.success)
                 return toast.error("Make sure to write valid data");
 
-            if (form.Password !== form.PasswordConfirmation)
+            if (Form.Password !== Form.PasswordConfirmation)
                 return toast.error("Password not matched");
 
             //   send a log in request
             setIsLoading(true);
             const res = await register({
-                username: form.FirstName + " " + form.LastName,
-                email: form.Email,
-                password: form.Password,
+                username: Form.FirstName + " " + Form.LastName,
+                email: Form.Email,
+                password: Form.Password,
             });
 
             //   throw an error
@@ -119,10 +119,10 @@ const page = () => {
             sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
             redirect === "false" || redirect === ""
-                ? router.push("/", {
+                ? Router.push("/", {
                       scroll: false,
                   })
-                : router.push("/" + redirect, {
+                : Router.push("/" + redirect, {
                       scroll: false,
                   });
             setIsLoading(false);
@@ -136,14 +136,14 @@ const page = () => {
     useEffect(() => {
         if (!sessionStorage.getItem("user")) return;
 
-        router.push("/");
+        Router.push("/");
         Swal.fire({
             title: "<h3 className='text-bold text-lg'>We think you are already logged in</h3>",
             titleText:
                 "If you want to change your account just log out and sign in with another one",
             icon: "info",
         });
-    }, []);
+    }, [Router]);
 
     return (
         <section className="bg-white">
@@ -220,7 +220,7 @@ const page = () => {
                                             type="text"
                                             id="FirstName"
                                             name="first_name"
-                                            value={form.FirstName}
+                                            value={Form.FirstName}
                                             onChange={inputHandle}
                                             className="mt-1 w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                             autoFocus={true}
@@ -240,7 +240,7 @@ const page = () => {
                                             type="text"
                                             id="LastName"
                                             name="last_name"
-                                            value={form.LastName}
+                                            value={Form.LastName}
                                             onChange={inputHandle}
                                             className="mt-1 w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                             required={true}
@@ -261,7 +261,7 @@ const page = () => {
                                     type="email"
                                     id="Email"
                                     name="email"
-                                    value={form.Email}
+                                    value={Form.Email}
                                     onChange={inputHandle}
                                     className="mt-1 w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     required={true}
@@ -287,7 +287,7 @@ const page = () => {
                                     type="password"
                                     id="Password"
                                     name="password"
-                                    value={form.Password}
+                                    value={Form.Password}
                                     onChange={inputHandle}
                                     minLength={user === "true" ? 1 : 8}
                                     required={true}
@@ -310,7 +310,7 @@ const page = () => {
                                             type="password"
                                             id="PasswordConfirmation"
                                             name="password_confirmation"
-                                            value={form.PasswordConfirmation}
+                                            value={Form.PasswordConfirmation}
                                             onChange={inputHandle}
                                             className="mt-1 px-3 py-2 w-full rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                             minLength={8}
@@ -335,7 +335,7 @@ const page = () => {
                                                         check: !prev.check,
                                                     }));
                                                 }}
-                                                checked={form.check}
+                                                checked={Form.check}
                                                 required={true}
                                             />
                                             <span className="text-sm text-gray-700">
@@ -377,9 +377,9 @@ const page = () => {
                                     variant="contained"
                                     color="success"
                                     className="px-12 py-3 font-medium text-sm bg-green-600 hover:bg-green-700 rounded-md transition-all"
-                                    disabled={isLoading ? true : false}
+                                    disabled={IsLoading ? true : false}
                                 >
-                                    {isLoading ? (
+                                    {IsLoading ? (
                                         <Spinner />
                                     ) : user === "true" ? (
                                         "Log in"
@@ -420,4 +420,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;

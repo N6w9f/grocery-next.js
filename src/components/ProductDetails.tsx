@@ -29,6 +29,10 @@ import {
     setCart_reducer,
 } from "@/store/reducers/cart.reducer";
 const ProductDetails = ({ product }: { product: APIProduct }) => {
+    const numberFormat = Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+    });
     const limit = 100;
 
     const dispatch = useAppDispatch();
@@ -100,9 +104,9 @@ const ProductDetails = ({ product }: { product: APIProduct }) => {
                     Add to cart
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-md:w-[90%] max-w-[750px] p-12 outline_auto outline-4 rounded-lg ">
+            <DialogContent className="max-md:w-[90%] max-w-[750px] max-h-[calc(100dvh-24px)] p-12 outline_auto outline-4 rounded-lg overflow-auto">
                 <DialogClose id="close_now" />
-                <div className="flex items-center gap-3">
+                <div className="max-h-full flex max-md:flex-col items-center gap-3">
                     <Image
                         src={product.attributes.image.data.attributes.url}
                         alt={
@@ -111,7 +115,7 @@ const ProductDetails = ({ product }: { product: APIProduct }) => {
                         }
                         width={product.attributes.image.data.attributes.width}
                         height={product.attributes.image.data.attributes.height}
-                        className="min-w-[300px] max-w-[300px] min-h-[320px] max-h-[320px] object-contain"
+                        className="md:min-w-[300px] md:max-w-[300px] md:min-h-[320px] md:max-h-[320px] object-contain"
                     />
 
                     <div className="flex flex-col gap-3">
@@ -121,15 +125,18 @@ const ProductDetails = ({ product }: { product: APIProduct }) => {
                         </DialogDescription>
 
                         {/* price */}
-                        <div className="flex items-center gap-3 font-bold text-3xl">
-                            <p>
-                                $
-                                {product.attributes.price -
-                                    product.attributes.discount}
+                        <div className="number_fixed flex items-center gap-3 font-bold text-3xl">
+                            <p className="max-w-full w-full">
+                                {numberFormat.format(
+                                    product.attributes.price -
+                                        product.attributes.discount
+                                )}
                             </p>
                             {product.attributes.discount > 0 && (
                                 <span className="text-slate-400 line-through">
-                                    ${product.attributes.price}
+                                    {numberFormat.format(
+                                        product.attributes.price
+                                    )}
                                 </span>
                             )}
                         </div>
@@ -140,7 +147,7 @@ const ProductDetails = ({ product }: { product: APIProduct }) => {
                         </p>
 
                         {/* pricing */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex max-md:flex-col md:items-center gap-2">
                             {/* set quantity */}
                             <div className="w-fit">
                                 <div className="flex items-center rounded border border-gray-200">
@@ -173,14 +180,13 @@ const ProductDetails = ({ product }: { product: APIProduct }) => {
                             </div>
 
                             {/* total */}
-                            <FaEquals />
-                            <span className="font-bold text-2xl">
-                                $
-                                {(
+                            <FaEquals className="max-md:hidden" />
+                            <span className="number_fixed font-bold text-2xl">
+                                {numberFormat.format(
                                     (product.attributes.price -
                                         product.attributes.discount) *
-                                    amount
-                                ).toFixed(2)}
+                                        amount
+                                )}
                             </span>
                         </div>
 

@@ -2,11 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
+.number_fixed {
+    font-variant-numeric: tabular-nums;
+}
 
 .fixed_height {
-     min-height: calc(100dvh - 87.97px)
+    min-height: calc(100dvh - 87.97px);
 }
 
 .green_selection {
@@ -54,7 +55,6 @@
         @apply bg-gray-600;
     } */
 }
-
 
 .cart_list_scrollbar {
     &::-webkit-scrollbar {

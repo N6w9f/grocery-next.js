@@ -1,6 +1,4 @@
 'use server'
-import { cookies } from "next/headers";
-
 import axiosClient from "./axios.utility";
 
 import { all_category } from "@/assets/icons";
@@ -8,7 +6,7 @@ import { all_category } from "@/assets/icons";
 import { APIBanner } from "@/types/data/banner.type";
 import { APICategory } from "@/types/data/categories.type";
 import { APIProduct } from "@/types/data/products.type";
-import { APITokenUser, APIUser } from "@/types/data/auth.type";
+import { APITokenUser } from "@/types/data/auth.type";
 
 import {
      productsBySearch_and_Category_Catcher,
@@ -24,19 +22,7 @@ import {
 } from "@/utilities/catcher";
 import { APIAddToCartSchema, APICart, APICartSchema } from "@/types/data/cart.type";
 import { failedSchema } from "@/types/data/shared.type";
-import { APIOrder, APIOrderSchema, APIProductAndAmount } from "@/types/data/orders.type";
-
-const Cookies = cookies()
-
-
-const meta = {
-     pagination: {
-          page: 0,
-          pageCount: 0,
-          pageSize: 0,
-          total: 0,
-     }
-}
+import { APIOrder, APIOrderSchema } from "@/types/data/orders.type";
 
 
 const getBanners = async () => await bannerCatcher(
@@ -378,38 +364,6 @@ const getOrders = async ({ userId, userEmail }: { userId: number, userEmail: str
                     address: order.attributes.address,
                     total: order.attributes.total,
                     phone: order.attributes.phone,
-                    productAndAmount: order.attributes.productAndAmount.map((product: APIProductAndAmount): APIProductAndAmount => {
-                         return {
-                              id: product.id,
-                              amount: product.amount,
-                              product: {
-                                   data: {
-
-                                        id: product.product.data.id,
-                                        attributes: {
-                                             title: product.product.data.attributes.title,
-                                             description: product.product.data.attributes.description,
-                                             quantity: product.product.data.attributes.quantity,
-                                             price: product.product.data.attributes.price,
-                                             discount: product.product.data.attributes.discount,
-                                             category: { data: { attributes: { category: product.product.data.attributes.category.data.attributes.category } } },
-                                             image: {
-                                                  data: {
-                                                       attributes: {
-                                                            url: process.env.DATABASE + product.product.data.attributes.image.data.attributes.url,
-                                                            alternativeText: product.product.data.attributes.image.data.attributes.alternativeText,
-                                                            width: product.product.data.attributes.image.data.attributes.width,
-                                                            height: product.product.data.attributes.image.data.attributes.height,
-                                                       }
-                                                  }
-                                             }
-
-                                        }
-                                   }
-                              }
-
-                         }
-                    }),
                     createdAt: order.attributes.createdAt
 
                }
@@ -431,12 +385,8 @@ type addOrderT = {
      address: string,
      phone: string,
      total: number,
-     productAndAmount: {
-          amount: number,
-          product: APIProduct
-     }[]
 }
-const addOrder = async ({ userId, userEmail, zip, address, phone, total, productAndAmount }: addOrderT): Promise<APIOrderSchema> => await addOrderCatcher(
+const addOrder = async ({ userId, userEmail, zip, address, phone, total }: addOrderT): Promise<APIOrderSchema> => await addOrderCatcher(
      async () => {
           const res = await axiosClient.post('/orders?populate=deep,5', {
                data: {
@@ -446,7 +396,6 @@ const addOrder = async ({ userId, userEmail, zip, address, phone, total, product
                     address: address,
                     phone: phone,
                     total: total,
-                    productAndAmount: productAndAmount
                }
           });
 

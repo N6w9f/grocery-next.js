@@ -39,7 +39,7 @@ const Category = ({ categories }: { categories: APICategory[] }) => {
             if (windowSize.width > 1024 && slidesPerView !== 4)
                 setSlidesPerView(4);
         }
-    }, [windowSize.width]);
+    }, [slidesPerView, windowSize.width]);
 
     return (
         <Swiper

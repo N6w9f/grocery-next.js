@@ -26,6 +26,7 @@ import { setCart_reducer } from "@/store/reducers/cart.reducer";
 
 import { APIUser } from "@/types/data/auth.type";
 import CartSheet from "./CartSheet";
+import { usePathname } from "next/navigation";
 
 const Header = ({
     setCategory_ = true,
@@ -34,6 +35,8 @@ const Header = ({
     setCategory_?: boolean;
     setSearch_?: boolean;
 }) => {
+    const path = usePathname();
+
     const dispatch = useAppDispatch();
     const category = useAppSelector((state) => state.category);
     const user = useAppSelector((state) => state.user);
@@ -67,7 +70,7 @@ const Header = ({
             const category = await getCategories();
             dispatch(setCategory(category));
         })();
-    }, []);
+    }, [dispatch]);
 
     return (
         <header className="container max-sm:px-3 py-3">
@@ -121,8 +124,8 @@ const Header = ({
                                         )}
                                     </CartSheet>
 
-                                    <h3 className="ms-3 font-semibold text-green-700 text-sm">
-                                        {user.username}
+                                    <h3 className="ms-3 font-semibold text-green-700 text-nowrap text-sm">
+                                        {user?.username}
                                     </h3>
                                     <ProfileDropdown />
                                 </>
@@ -131,35 +134,20 @@ const Header = ({
                                     type="button"
                                     className="block font-semibold text-white text-md bg-green-600 hover:bg-green-700 rounded-md transition"
                                 >
-                                    <Link href="/auth" className="px-5 py-2.5">
+                                    <Link
+                                        href={
+                                            path === "/"
+                                                ? "/auth"
+                                                : "/auth?redirect=" +
+                                                  path.slice(1)
+                                        }
+                                        className="px-5 py-2.5"
+                                    >
                                         Login
                                     </Link>
                                 </Button>
                             )}
                         </div>
-
-                        <button
-                            onClick={() => {
-                                setMenu((prev) => !prev);
-                            }}
-                            className="block rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 md:hidden"
-                        >
-                            <span className="sr-only">Toggle menu</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                />
-                            </svg>
-                        </button>
                     </div>
                 </div>
             </div>

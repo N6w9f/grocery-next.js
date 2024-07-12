@@ -42,9 +42,6 @@ const Dropdown = ({
                     type="button"
                     onClick={handleDropdown}
                     className={className}
-                    onBlur={() => {
-                        setIsDropdown(false);
-                    }}
                 >
                     {children}
                 </button>
@@ -56,7 +53,12 @@ const Dropdown = ({
                     )}
                     role="menu"
                 >
-                    <ul className="max-h-[152px] p-2 overflow-auto dropdown_scrollbar">
+                    <ul
+                        onBlur={() => {
+                            setIsDropdown(false);
+                        }}
+                        className="max-h-[152px] p-2 overflow-auto dropdown_scrollbar"
+                    >
                         {options.map((option) => (
                             <li
                                 key={option.id}

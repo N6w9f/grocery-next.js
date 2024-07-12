@@ -17,7 +17,7 @@ const Products = async () => {
 
                 <Link
                     href="/products"
-                    className="flex items-center gap-1 font-medium text-green-600 hover:underline"
+                    className="flex items-center gap-1 font-medium text-green-600 text-nowrap hover:underline"
                 >
                     All products
                     <MdKeyboardDoubleArrowRight className="mt-1 text-green-600" />

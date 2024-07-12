@@ -4,12 +4,14 @@ import { removeCart_reducer } from "@/store/reducers/cart.reducer";
 import { removeUser } from "@/store/reducers/user.reducer";
 import cookies from "js-cookie";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import React, { useState } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 
 const ProfileDropdown = () => {
+    const router = useRouter();
     const dispatch = useAppDispatch();
 
     const [isDropdown, setIsDropdown] = useState(false);
@@ -24,6 +26,8 @@ const ProfileDropdown = () => {
         sessionStorage.removeItem("cart");
         dispatch(removeCart_reducer());
         dispatch(removeUser());
+
+        router.refresh();
     };
 
     return (

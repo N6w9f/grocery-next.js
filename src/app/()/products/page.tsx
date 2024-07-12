@@ -11,7 +11,7 @@ import { APIProductSchema } from "@/types/data/products.type";
 import Product from "@/components/shared/Product";
 import Search from "@/components/shared/Search";
 
-const page = ({
+const Page = ({
     searchParams: { category = "all", search = "all" },
 }: {
     searchParams: { search?: string; category?: string };
@@ -65,4 +65,4 @@ const page = ({
     );
 };
 
-export default page;
+export default Page;

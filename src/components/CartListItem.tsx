@@ -74,10 +74,11 @@ const CartListItem = ({ cartItem }: { cartItem: APICart }) => {
                     </p>
                 </div>
                 <Button
-                    className="min-w-max h-fit p-2 block text-xl rounded-full"
+                    className="min-w-max h-fit p-2 max-[360px]:hidden block text-xl rounded-full"
                     color="error"
                     onClick={deleteFromCart}
                     disabled={isLoading}
+
                 >
                     {!isLoading ? (
                         <FaTrash className="w-fit h-fit m-0 p-0 " />

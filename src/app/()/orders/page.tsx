@@ -7,34 +7,28 @@ import { APIOrderSuccessSchema } from "@/types/data/orders.type";
 import { failedSchema } from "@/types/data/shared.type";
 import { getOrders } from "@/utilities/APIS/groceryStoreAPIs";
 
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import moment from "moment";
-import useNumberFormatter from "@/hooks/useNumberFormatter";
-import Image from "next/image";
+import NoData from "@/components/NoData";
+import { useAppSelector } from "@/hooks/providers/ReduxProvider.hook";
 
-const page = () => {
+const Page = () => {
+    const numberFormat = Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+    });
+    const user = useAppSelector((state) => state.user);
     const router = useRouter();
-
-    const user = useMemo((): APIUser | false => {
-        const user_ = JSON.parse(sessionStorage.getItem("user") || "false");
-
-        return user_;
-    }, []);
-    if (!user) return router.replace("/auth?redirect=orders");
 
     const [orders, setOrders] = useState<
         APIOrderSuccessSchema | null | failedSchema
     >(null);
 
     useEffect(() => {
+        if (!user) return;
+
         (async () => {
             const res = await getOrders({
                 userId: user.id,
@@ -48,13 +42,19 @@ const page = () => {
 
             setOrders(res);
         })();
-    }, [user]);
+    }, [router, user]);
 
     if (orders === null)
         return (
-            <main className="container fixed_height max-sm:px-3 py-12">
-                nothing to show from null
-            </main>
+            <>
+                <section>
+                    <CurrentCategory>My orders</CurrentCategory>
+                </section>
+
+                <main className="container fixed_height max-sm:px-3 py-12 flex justify-center items-center">
+                    <NoData />
+                </main>
+            </>
         );
 
     return (
@@ -63,7 +63,7 @@ const page = () => {
                 <CurrentCategory>My orders</CurrentCategory>
             </section>
 
-            <main className="container fixed_height max-sm:px-3 py-12">
+            <main className="container fixed_height max-sm:px-3 py-12 flex justify-center items-center">
                 {orders.status !== "success" && (
                     <ErrorAlert
                         statusCode={orders.statusCode}
@@ -73,150 +73,81 @@ const page = () => {
 
                 {orders.status === "success" &&
                     (orders.data.length === 0 ? (
-                        "nothing to show from success"
+                        <>
+                            <NoData />
+                        </>
                     ) : (
-                        <ul>
-                            {orders.data.map((order) => (
-                                <li key={order.id}>
-                                    <Accordion type="single" collapsible>
-                                        <AccordionItem value="item-1">
-                                            <AccordionTrigger className="white_green_selection px-6 font-semibold text-white text-lg bg-green-600">
-                                                <ul className="w-full flex justify-between items-center gap-12">
-                                                    <li>
-                                                        Order date:{" "}
-                                                        {moment(
-                                                            order.attributes
-                                                                .createdAt
-                                                        ).format("DD/MM/YYYY")}
-                                                    </li>
-                                                    <li>
-                                                        Total:{" "}
-                                                        {useNumberFormatter(
-                                                            order.attributes
-                                                                .total,
-                                                            "currency"
-                                                        )}
-                                                    </li>
-                                                </ul>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="px-6 py-3 font-semibold text-lg bg-green-50">
-                                                <ul className="flex flex-col gap-6">
-                                                    {order.attributes.productAndAmount.map(
-                                                        (product) => (
-                                                            <li
-                                                                key={product.id}
-                                                                className="flex gap-12"
-                                                            >
-                                                                <Image
-                                                                    src={
-                                                                        product
-                                                                            .product
-                                                                            .data
-                                                                            .attributes
-                                                                            .image
-                                                                            .data
-                                                                            .attributes
-                                                                            .url
-                                                                    }
-                                                                    alt={
-                                                                        product
-                                                                            .product
-                                                                            .data
-                                                                            .attributes
-                                                                            .image
-                                                                            .data
-                                                                            .attributes
-                                                                            .alternativeText ||
-                                                                        "product"
-                                                                    }
-                                                                    width={
-                                                                        product
-                                                                            .product
-                                                                            .data
-                                                                            .attributes
-                                                                            .image
-                                                                            .data
-                                                                            .attributes
-                                                                            .width
-                                                                    }
-                                                                    height={
-                                                                        product
-                                                                            .product
-                                                                            .data
-                                                                            .attributes
-                                                                            .image
-                                                                            .data
-                                                                            .attributes
-                                                                            .height
-                                                                    }
-                                                                    className="size-16 object-contain"
-                                                                />
-
-                                                                <h3 className="w-56 flex flex-col gap-1">
-                                                                    {
-                                                                        product
-                                                                            .product
-                                                                            .data
-                                                                            .attributes
-                                                                            .title
-                                                                    }
-                                                                    <span>
-                                                                        price:{" "}
-                                                                        {useNumberFormatter(
-                                                                            product
-                                                                                .product
-                                                                                .data
-                                                                                .attributes
-                                                                                .price -
-                                                                                product
-                                                                                    .product
-                                                                                    .data
-                                                                                    .attributes
-                                                                                    .discount,
-                                                                            "currency"
-                                                                        )}
-                                                                    </span>
-                                                                </h3>
-                                                                <div className="flex flex-1 justify-between">
-                                                                    <p>
-                                                                        Quantity:{" "}
-                                                                        {
-                                                                            product.amount
-                                                                        }
-                                                                    </p>
-
-                                                                    <p>
-                                                                        Total:{" "}
-                                                                        {useNumberFormatter(
-                                                                            product.amount *
-                                                                                (product
-                                                                                    .product
-                                                                                    .data
-                                                                                    .attributes
-                                                                                    .price -
-                                                                                    product
-                                                                                        .product
-                                                                                        .data
-                                                                                        .attributes
-                                                                                        .discount),
-                                                                            "currency"
-                                                                        )}
-                                                                    </p>
-                                                                </div>
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                </li>
-                            ))}
-                        </ul>
+                        <table className="w-full mb-auto">
+                            <thead className="white_green_selection">
+                                <tr className="bg-green-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
+                                    <th className="px-5 py-3">ID</th>
+                                    <th className="max-[440px]:hidden px-5 py-3">
+                                        User Email
+                                    </th>
+                                    <th className="px-5 py-3 max-lg:hidden">
+                                        Zip
+                                    </th>
+                                    <th className="max-sm:hidden px-5 py-3">
+                                        Address
+                                    </th>
+                                    <th className="max-[850px]:hidden px-5 py-3">
+                                        Date
+                                    </th>
+                                    <th className="px-5 py-3">Total</th>
+                                    <th className="px-5 py-3 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-gray-500">
+                                {orders.data.map((order) => (
+                                    <tr key={order.id}>
+                                        <td className="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {order.id}
+                                            </p>
+                                        </td>
+                                        <td className="max-[440px]:hidden border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {order.attributes.userEmail}
+                                            </p>
+                                        </td>
+                                        <td className="max-lg:hidden border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {order.attributes.zip}
+                                            </p>
+                                        </td>
+                                        <td className="max-sm:hidden border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {order.attributes.address}
+                                            </p>
+                                        </td>
+                                        <td className="max-[850px]:hidden border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {moment(
+                                                    order.attributes
+                                                        .createdAt || new Date()
+                                                ).format("LLL")}
+                                            </p>
+                                        </td>
+                                        <td className="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <p className="whitespace-no-wrap line-clamp-1">
+                                                {numberFormat.format(
+                                                    order.attributes.total
+                                                )}
+                                            </p>
+                                        </td>
+                                        <td className="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                            <span className="rounded-full bg-purple-200 px-3 py-1 text-xs text-center font-semibold text-black line-clamp-1">
+                                                pending
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     ))}
             </main>
         </>
     );
 };
 
-export default page;
+export default Page;

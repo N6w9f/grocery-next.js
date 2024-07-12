@@ -2,8 +2,11 @@ import { APIId, APIDate, dataSchema, APIImage, successSchema } from "./shared.ty
 
 export type APIProduct = APIId & {
      attributes: {
-          title: string, description: string, quantity: string,
-          price: number, discount: number,
+          title: string,
+          description: string,
+          quantity: string,
+          price: number,
+          discount: number,
           category: { data: { attributes: { category: string } } },
           image: {
                data: {

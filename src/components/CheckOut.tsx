@@ -6,8 +6,6 @@ import {
     PaymentElement,
 } from "@stripe/react-stripe-js";
 import Spinner from "./shared/Spinner";
-import { useAppSelector } from "@/hooks/providers/ReduxProvider.hook";
-import { removeFromCart } from "@/utilities/APIS/groceryStoreAPIs";
 import { toast } from "react-toastify";
 
 type CheckOutSchema = {

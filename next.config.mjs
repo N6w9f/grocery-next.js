@@ -9,6 +9,11 @@ const nextConfig = {
                 pathname: "**",
             },
             {
+                protocol: "https",
+                hostname: "grocery-strapi.onrender.com",
+                pathname: "**",
+            },
+            {
                 protocol: "http",
                 hostname: "localhost",
                 pathname: "**",

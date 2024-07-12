@@ -11,9 +11,12 @@ import {
 } from "./ui/sheet";
 import { Button } from "@mui/material";
 import CartListItem from "./CartListItem";
-import useNumberFormatter from "@/hooks/useNumberFormatter";
 
 const CartSheet = ({ children }: { children: ReactNode }) => {
+    const numberFormat = Intl.NumberFormat("en-us", {
+        currency: "USD",
+        style: "currency",
+    });
     const user = useAppSelector((state) => state.user);
     const cart = useAppSelector((state) => state.cart);
     const total = useMemo(() => {
@@ -42,7 +45,7 @@ const CartSheet = ({ children }: { children: ReactNode }) => {
                         </SheetTitle>
                     </SheetHeader>
 
-                    <ul className="flex flex-col gap-3 overflow-x-auto cart_list_scrollbar">
+                    <ul className="flex flex-col gap-3 overflow-auto cart_list_scrollbar">
                         {cart.map((cartItem) => (
                             <li key={cartItem.id} className="px-2">
                                 <CartListItem cartItem={cartItem} />
@@ -53,7 +56,7 @@ const CartSheet = ({ children }: { children: ReactNode }) => {
                     <div className="mt-auto flex flex-col gap-2 ">
                         <h3 className="flex justify-between items-center gap-3 font-bold text-xl">
                             Subtotal
-                            <span>{useNumberFormatter(total, "currency")}</span>
+                            <span>{numberFormat.format(total)}</span>
                         </h3>
 
                         <Button
