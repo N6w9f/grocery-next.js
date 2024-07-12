@@ -61,7 +61,7 @@ const CheckOut = ({ amount, delivery, inputs }: CheckOutSchema) => {
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `http://www.localhost:3000/payment-success?amount=${
+                return_url: `${process.env.NEXT_PUBLIC_URL || ""}/payment-success?amount=${
                     amount / 100
                 }&phone=${inputs.phone}&address=${inputs.address}&zip=${
                     inputs.zip
